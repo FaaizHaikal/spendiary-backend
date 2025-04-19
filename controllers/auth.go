@@ -28,7 +28,7 @@ func Register(ctx *fiber.Ctx) error {
 		Password: hashedPassword,
 	}
 
-	if err := database.DB.Create(&user); err != nil {
+	if err := database.DB.Create(&user).Error; err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Username taken"})
 	}
 
@@ -67,17 +67,17 @@ func Login(ctx *fiber.Ctx) error {
 }
 
 func Refresh(ctx *fiber.Ctx) error {
-	type TokenInput struct {
+	type Request struct {
 		RefreshToken string `json:"refresh_token"`
 	}
 
-	var input TokenInput
-	if err := ctx.BodyParser(&input); err != nil {
+	var req Request
+	if err := ctx.BodyParser(&req); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Bad request"})
 	}
 
-	token, err := jwt.Parse(input.RefreshToken, func(t *jwt.Token) (interface{}, error) {
-		return []byte(os.Getenv("JWT_SECRET")), nil
+	token, err := jwt.Parse(req.RefreshToken, func(t *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_REFRESH_SECRET")), nil
 	})
 
 	if err != nil || !token.Valid {
