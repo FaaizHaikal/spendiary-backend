@@ -30,7 +30,7 @@ func GenerateRefreshToken(UserID uint) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	return token.SignedString([]byte(os.Getenv("JWT_SECRET")))
+	return token.SignedString([]byte(os.Getenv("JWT_REFRESH_SECRET")))
 }
 
 func HashPassword(password string) string {
