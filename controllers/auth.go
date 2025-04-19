@@ -1,14 +1,10 @@
 package controllers
 
 import (
-	"os"
-	"time"
-
 	"github.com/FaaizHaikal/spendiary-backend/database"
 	"github.com/FaaizHaikal/spendiary-backend/models"
 	"github.com/FaaizHaikal/spendiary-backend/utils"
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt/v4"
 )
 
 func Register(ctx *fiber.Ctx) error {
@@ -56,21 +52,18 @@ func Login(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Incorrect password"})
 	}
 
-	token, err := generateTokens(user.ID)
+	accessToken, err := utils.GenerateAccessToken(user.ID)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Could not login"})
 	}
 
-	return ctx.JSON(fiber.Map{"token": token})
-}
-
-func generateTokens(UserID uint) (string, error) {
-	claims := jwt.MapClaims{
-		"user_id": UserID,
-		"exp":     time.Now().Add(15 * time.Minute).Unix(),
+	refreshToken, err := utils.GenerateRefreshToken(user.ID)
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Could not login"})
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-	return token.SignedString([]byte(os.Getenv("JWT_SECRET")))
+	return ctx.JSON(fiber.Map{
+		"access_token":  accessToken,
+		"refresh_token": refreshToken,
+	})
 }
