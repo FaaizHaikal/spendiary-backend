@@ -7,13 +7,13 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func Register(ctx *fiber.Ctx) error {
-	type Request struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}
+type AuthRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
 
-	var req Request
+func Register(ctx *fiber.Ctx) error {
+	var req AuthRequest
 	if err := ctx.BodyParser(&req); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Bad request"})
 	}
@@ -33,12 +33,7 @@ func Register(ctx *fiber.Ctx) error {
 }
 
 func Login(ctx *fiber.Ctx) error {
-	type Request struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}
-
-	var req Request
+	var req AuthRequest
 	if err := ctx.BodyParser(&req); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Bad request"})
 	}
