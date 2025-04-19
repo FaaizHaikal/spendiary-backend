@@ -1,10 +1,13 @@
 package controllers
 
 import (
+	"os"
+
 	"github.com/FaaizHaikal/spendiary-backend/database"
 	"github.com/FaaizHaikal/spendiary-backend/models"
 	"github.com/FaaizHaikal/spendiary-backend/utils"
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v4"
 )
 
 type AuthRequest struct {
@@ -57,8 +60,37 @@ func Login(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Could not login"})
 	}
 
-	return ctx.JSON(fiber.Map{
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"access_token":  accessToken,
 		"refresh_token": refreshToken,
 	})
+}
+
+func Refresh(ctx *fiber.Ctx) error {
+	type TokenInput struct {
+		RefreshToken string `json:"refresh_token"`
+	}
+
+	var input TokenInput
+	if err := ctx.BodyParser(&input); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Bad request"})
+	}
+
+	token, err := jwt.Parse(input.RefreshToken, func(t *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET")), nil
+	})
+
+	if err != nil || !token.Valid {
+		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Invalid refresh token"})
+	}
+
+	claims := token.Claims.(jwt.MapClaims)
+	userID := uint(claims["user_id"].(float64))
+
+	newAccessToken, err := utils.GenerateAccessToken(userID)
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Could not generate access token"})
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{"access_token": newAccessToken})
 }
