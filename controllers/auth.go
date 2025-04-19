@@ -94,3 +94,9 @@ func Refresh(ctx *fiber.Ctx) error {
 
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{"access_token": newAccessToken})
 }
+
+func Profile(ctx *fiber.Ctx) error {
+	userID := ctx.Locals("user_id")
+
+	return ctx.JSON(fiber.Map{"message": "Hello from profile!", "user_id": userID})
+}
