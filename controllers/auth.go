@@ -29,7 +29,7 @@ func Register(ctx *fiber.Ctx) error {
 	}
 
 	if err := database.DB.Create(&user).Error; err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Username taken"})
+		return ctx.Status(fiber.StatusConflict).JSON(fiber.Map{"error": "Username taken"})
 	}
 
 	return ctx.Status(fiber.StatusCreated).JSON(fiber.Map{"message": "User registered successfully"})
