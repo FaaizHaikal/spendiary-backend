@@ -32,7 +32,7 @@ func Register(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Username taken"})
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{"message": "User registered successfully"})
+	return ctx.Status(fiber.StatusCreated).JSON(fiber.Map{"message": "User registered successfully"})
 }
 
 func Login(ctx *fiber.Ctx) error {
