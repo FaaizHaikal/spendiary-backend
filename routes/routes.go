@@ -15,7 +15,7 @@ func Initialize(app *fiber.App) {
 
 	protected := api.Group("/user", middleware.RequireAuth)
 
-	expense := protected.Group("/expense")
+	expense := protected.Group("/expenses")
 
 	expense.Get("/monthly", controllers.GetMonthlyExpenses)
 	expense.Get("/all", controllers.GetExpenses)
