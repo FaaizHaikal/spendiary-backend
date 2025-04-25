@@ -11,9 +11,9 @@ import (
 var accessTokenDuration = time.Minute * 15
 var refreshTokenDuration = time.Hour * 24 * 7
 
-func GenerateAccessToken(UserID uint) (string, error) {
+func GenerateAccessToken(userID uint) (string, error) {
 	claims := jwt.MapClaims{
-		"user_id": UserID,
+		"user_id": userID,
 		"exp":     time.Now().Add(accessTokenDuration).Unix(),
 	}
 
@@ -22,9 +22,9 @@ func GenerateAccessToken(UserID uint) (string, error) {
 	return token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 }
 
-func GenerateRefreshToken(UserID uint) (string, error) {
+func GenerateRefreshToken(userID uint) (string, error) {
 	claims := jwt.MapClaims{
-		"user_id": UserID,
+		"user_id": userID,
 		"exp":     time.Now().Add(refreshTokenDuration).Unix(),
 	}
 
