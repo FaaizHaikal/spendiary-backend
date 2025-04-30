@@ -26,7 +26,7 @@ func CreateExpense(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to create expense"})
 	}
 
-	return ctx.Status(fiber.StatusCreated).JSON(fiber.Map{"message": "Expense created successfully"})
+	return ctx.SendStatus(fiber.StatusCreated)
 }
 
 func GetExpenses(ctx *fiber.Ctx) error {
@@ -37,7 +37,7 @@ func GetExpenses(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to fetch expenses"})
 	}
 
-	return ctx.JSON(expenses)
+	return ctx.Status(fiber.StatusOK).JSON(expenses)
 }
 
 func UpdateExpense(ctx *fiber.Ctx) error {
@@ -63,7 +63,7 @@ func UpdateExpense(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to update expense"})
 	}
 
-	return ctx.JSON(existing)
+	return ctx.SendStatus(fiber.StatusNoContent)
 }
 
 func DeleteExpense(ctx *fiber.Ctx) error {
@@ -75,7 +75,7 @@ func DeleteExpense(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to delete expense"})
 	}
 
-	return ctx.JSON(fiber.Map{"message": "Expense deleted"})
+	return ctx.SendStatus(fiber.StatusNoContent)
 }
 
 func GetExpensesByMonth(ctx *fiber.Ctx) error {

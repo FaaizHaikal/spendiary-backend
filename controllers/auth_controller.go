@@ -21,7 +21,7 @@ func Register(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusConflict).JSON(fiber.Map{"error": "Username taken"})
 	}
 
-	return ctx.Status(fiber.StatusCreated).JSON(fiber.Map{"message": "User registered successfully"})
+	return ctx.SendStatus(fiber.StatusCreated)
 }
 
 func Login(ctx *fiber.Ctx) error {
