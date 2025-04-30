@@ -19,7 +19,7 @@ func Initialize(app *fiber.App) {
 	expense := protected.Group("/expenses")
 
 	expense.Get("/monthly", controllers.GetExpensesByMonth)
-	expense.Get("/period", controllers.GetExpensesGroupByPeriod)
+	expense.Get("/group", controllers.GetExpensesGroupByPeriod)
 	expense.Get("/all", controllers.GetExpenses)
 	expense.Post("/create", controllers.CreateExpense)
 	expense.Post("/delete", controllers.DeleteExpense)
