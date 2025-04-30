@@ -65,12 +65,14 @@ func GetExpensesGroupByPeriod(userID uint, period string) ([]models.ChartPoint, 
 
 	case "week":
 		weekday := int(now.Weekday())
-		if weekday == 0 {
+		if weekday == 0 { // Sunday
 			weekday = 7
 		}
 
-		startDate = now.AddDate(0, 0, -weekday+1)
-		endDate = startDate.AddDate(0, 0, 7)
+		daysSinceMonday := weekday - 1 // Monday is 1 in time.Weekday
+
+		startDate := now.AddDate(0, 0, -daysSinceMonday).Truncate(24 * time.Hour)
+		endDate := startDate.AddDate(0, 0, 6)
 		rows = db.Raw(`
 			SELECT to_char(date, 'Dy') as label, SUM(amount) as total
 			FROM expenses
