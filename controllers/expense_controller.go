@@ -78,14 +78,49 @@ func DeleteExpense(ctx *fiber.Ctx) error {
 	return ctx.JSON(fiber.Map{"message": "Expense deleted"})
 }
 
-func GetMonthlyExpenses(ctx *fiber.Ctx) error {
+func GetExpensesByMonth(ctx *fiber.Ctx) error {
 	userID := ctx.Locals("userID").(uint)
 
-	now := time.Now()
-	expenses, err := services.GetExpensesByMonth(userID, now.Year(), now.Month())
-	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "Failed to fetch expenses")
+	monthParam := ctx.Query("month")
+	yearParam := ctx.Query("year")
+
+	month, err := strconv.Atoi(monthParam)
+	if err != nil || month < 1 || month > 12 {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid month"})
 	}
 
-	return ctx.JSON(expenses)
+	year, err := strconv.Atoi(yearParam)
+	if err != nil || year < 1 {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid year"})
+	}
+
+	expenses, err := services.GetExpensesByMonth(userID, year, time.Month(month))
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to fetch expenses"})
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(expenses)
+}
+
+func GetExpensesGroupByPeriod(ctx *fiber.Ctx) error {
+	userID := ctx.Locals("userID").(uint)
+	period := ctx.Query("period", "month")
+
+	validPeriods := map[string]bool{
+		"day":   true,
+		"week":  true,
+		"month": true,
+		"year":  true,
+	}
+
+	if !validPeriods[period] {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid period"})
+	}
+
+	points, err := services.GetExpensesGroupByPeriod(userID, period)
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to fetch expenses"})
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(points)
 }
