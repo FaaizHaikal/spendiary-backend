@@ -11,6 +11,7 @@ func Initialize(app *fiber.App) {
 
 	api.Post("/register", controllers.Register)
 	api.Post("/login", controllers.Login)
+	api.Post("/delete", controllers.DeleteUser)
 	api.Post("/refresh", controllers.Refresh)
 
 	protected := api.Group("/user", middleware.RequireAuth)

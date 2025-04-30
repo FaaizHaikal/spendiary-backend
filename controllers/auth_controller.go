@@ -50,6 +50,28 @@ func Login(ctx *fiber.Ctx) error {
 	})
 }
 
+func DeleteUser(ctx *fiber.Ctx) error {
+	var req AuthRequest
+	if err := ctx.BodyParser(&req); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Bad request"})
+	}
+
+	user, err := services.FindUserByUsername(req.Username)
+	if err != nil {
+		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Username not found"})
+	}
+
+	if !utils.CheckPasswordHash(req.Password, user.Password) {
+		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Incorrect password"})
+	}
+
+	if err := services.DeleteUser(user); err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Could not delete user"})
+	}
+
+	return ctx.SendStatus(fiber.StatusNoContent)
+}
+
 func Refresh(ctx *fiber.Ctx) error {
 	var req struct {
 		RefreshToken string `json:"refresh_token"`

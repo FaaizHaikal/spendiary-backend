@@ -27,6 +27,10 @@ func FindUserByUsername(username string) (*models.User, error) {
 	return &user, err
 }
 
+func DeleteUser(user *models.User) error {
+	return database.DB.Unscoped().Delete(&user).Error
+}
+
 func GenerateTokens(userID uint) (string, string, error) {
 	accessToken, err := utils.GenerateAccessToken(userID)
 	if err != nil {
