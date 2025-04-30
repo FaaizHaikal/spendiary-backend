@@ -30,7 +30,7 @@ func CreateExpense(ctx *fiber.Ctx) error {
 }
 
 func GetExpenses(ctx *fiber.Ctx) error {
-	userID := ctx.Locals("userID").(uint)
+	userID := ctx.Locals("user_id").(uint)
 
 	expenses, err := services.GetAllExpenses(userID)
 	if err != nil {
@@ -41,7 +41,7 @@ func GetExpenses(ctx *fiber.Ctx) error {
 }
 
 func UpdateExpense(ctx *fiber.Ctx) error {
-	userID := ctx.Locals("userID").(uint)
+	userID := ctx.Locals("user_id").(uint)
 	id, _ := strconv.Atoi(ctx.Params("id"))
 
 	var updated models.Expense
@@ -67,7 +67,7 @@ func UpdateExpense(ctx *fiber.Ctx) error {
 }
 
 func DeleteExpense(ctx *fiber.Ctx) error {
-	userID := ctx.Locals("userID").(uint)
+	userID := ctx.Locals("user_id").(uint)
 	id, _ := strconv.Atoi(ctx.Params("id"))
 
 	err := services.DeleteExpense(uint(id), userID)
@@ -79,7 +79,7 @@ func DeleteExpense(ctx *fiber.Ctx) error {
 }
 
 func GetExpensesByMonth(ctx *fiber.Ctx) error {
-	userID := ctx.Locals("userID").(uint)
+	userID := ctx.Locals("user_id").(uint)
 
 	monthParam := ctx.Query("month")
 	yearParam := ctx.Query("year")
@@ -103,7 +103,7 @@ func GetExpensesByMonth(ctx *fiber.Ctx) error {
 }
 
 func GetExpensesGroupByPeriod(ctx *fiber.Ctx) error {
-	userID := ctx.Locals("userID").(uint)
+	userID := ctx.Locals("user_id").(uint)
 	period := ctx.Query("period", "month")
 
 	validPeriods := map[string]bool{
