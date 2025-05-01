@@ -1,9 +1,13 @@
 package controllers
 
 import (
+	"os"
+	"strings"
+
 	"github.com/FaaizHaikal/spendiary-backend/services"
 	"github.com/FaaizHaikal/spendiary-backend/utils"
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v4"
 )
 
 type AuthRequest struct {
@@ -91,4 +95,22 @@ func Refresh(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{"access_token": newAccessToken})
+}
+
+func VerifyAccessToken(ctx *fiber.Ctx) error {
+	authHeader := ctx.Get("Authorization")
+	if authHeader == "" {
+		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Missing token"})
+	}
+
+	tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
+	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET")), nil
+	})
+
+	if err != nil || !token.Valid {
+		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Invalid token"})
+	}
+
+	return ctx.SendStatus(fiber.StatusOK)
 }

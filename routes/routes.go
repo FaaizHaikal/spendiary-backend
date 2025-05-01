@@ -15,6 +15,7 @@ func Initialize(app *fiber.App) {
 	api.Post("/refresh", controllers.Refresh)
 
 	protected := api.Group("/user", middleware.RequireAuth)
+	protected.Get("/verify", controllers.VerifyAccessToken)
 
 	expense := protected.Group("/expenses")
 
