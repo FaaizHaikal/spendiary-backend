@@ -33,6 +33,12 @@ func GetAllExpenses(userID uint) ([]models.Expense, error) {
 	return expenses, err
 }
 
+func GetRecentExpenses(userID uint, count int) ([]models.Expense, error) {
+	var expenses []models.Expense
+	err := database.DB.Where("user_id = ?", userID).Order("date DESC").Limit(count).Find(&expenses).Error
+	return expenses, err
+}
+
 func GetExpensesByMonth(userID uint, year int, month time.Month) ([]models.Expense, error) {
 	var expenses []models.Expense
 

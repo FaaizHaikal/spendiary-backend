@@ -40,6 +40,27 @@ func GetExpenses(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusOK).JSON(expenses)
 }
 
+func GetRecentExpenses(ctx *fiber.Ctx) error {
+	userId := ctx.Locals("user_id").(uint)
+
+	countParam := ctx.Query("count", "5")
+	count, err := strconv.Atoi(countParam)
+	if err != nil || count <= 0 {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid count parameter",
+		})
+	}
+
+	expenses, err := services.GetRecentExpenses(userId, count)
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to fetch recent expenses",
+		})
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(expenses)
+}
+
 func UpdateExpense(ctx *fiber.Ctx) error {
 	userID := ctx.Locals("user_id").(uint)
 	id, _ := strconv.Atoi(ctx.Params("id"))

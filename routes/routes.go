@@ -22,6 +22,7 @@ func Initialize(app *fiber.App) {
 	expense.Get("/monthly", controllers.GetExpensesByMonth)
 	expense.Get("/group", controllers.GetExpensesGroupByPeriod)
 	expense.Get("/all", controllers.GetExpenses)
+	expense.Get("/recent", controllers.GetRecentExpenses)
 	expense.Post("/create", controllers.CreateExpense)
 	expense.Post("/delete", controllers.DeleteExpense)
 	expense.Post("/update", controllers.UpdateExpense)
